@@ -6,6 +6,10 @@ GET /api/user - HTML Document Render
 GET /api/users/1 - Get the user with ID 1
 GET /api/users/2 - Get the user with ID 2
 
+Dynamic Path Parameters
+GET /api/users/:id
+:id -> Variable this is Dynamic
+
 POST /api/users - Create New user
 
 PATCH /api/users/1 - Edit the user with ID 1
@@ -13,4 +17,4 @@ PATCH /api/users/1 - Edit the user with ID 1
 DELETE /api/user/1 - Delete the user with ID 1
 
 
-
+where api i am using on route it will show json data and where api is not used it means will throw HTML data 
