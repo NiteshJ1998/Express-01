@@ -2,8 +2,6 @@ const express = require("express");
 const fs = require("fs");
 const mongoose = require("mongoose");
 
-const users = require("./MOCK_DATA.json");
-
 const app = express();
 const PORT = 8000;
 
@@ -54,25 +52,30 @@ app.use(express.urlencoded({ extended: false }));
 //   console.log("hello from middleware 1 ");
 //   return res.end("hey fdsfdsadfsfads");
 // });
-//Routes
-// app.get("/users", (req, res) => {
-//   const html = `
-//       <ul>
-//       ${users.map((user) => `<li>${user.job_title}</li>`).join("")}
-//       </ul>
-//       `;
-//   res.send(html);
-// });
+//Routes;
+app.get("/users", async (req, res) => {
+  const allDbUsers = await User.find({});
+  const html = `
+      <ul>
+      ${allDbUsers
+        .map((user) => `<li>${user.firstName} -${user.email}</li>`)
+        .join("")}
+      </ul>
+      `;
+  res.send(html);
+});
 
 //REST API
 app
   .route("/api/users")
-  .get((req, res) => {
-    return res.json(users);
+  .get(async (req, res) => {
+    const allDbUsers = await User.find({});
+    return res.json(allDbUsers);
   })
-  .patch((req, res) => {
+  .patch(async (req, res) => {
     //Edit user with id
-    return res.json({ status: "Pending" });
+    await User.findByIdAndUpdate(req.params.id, { lastName: "changed" });
+    return res.json({ status: "success" });
   })
   .delete((req, res) => {
     //Delete user  with id
@@ -98,7 +101,8 @@ app.post("/api/users", async (req, res) => {
     gender: body.gender,
     jobTitle: body.job_title,
   });
-  return res.status(201).json({ msg: "Success" });
+
+  return res.status(201).json({ msg: "kaam kar raha hai" });
 });
 
 // app.post("/api/users", (req, res) => {
@@ -109,10 +113,17 @@ app.post("/api/users", async (req, res) => {
 //   });
 // });
 
-app.get("/api/users/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const user = users.find((user) => user.id === id);
-  return res.json(user);
-});
+app
+  .route("/api/users/:id")
+  .get(async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(400).json({ error: " user not found" });
+    return res.json(user);
+  })
+  .patch(async (req, res) => {
+    //Edit user with id
+    await User.findByIdAndUpdate(req.params.id, { lastName: "changed" });
+    return res.json({ status: "success" });
+  });
 
 app.listen(PORT, () => console.log(`Server Started at PORT:${PORT}`));
